@@ -45,11 +45,16 @@ class Sampling():
 
         start_sample_time = time.time()
         z_sampled = sampler(y=y, save_path=save_path)
-        g_z_sampled = self.ccf.g.vae(z_sampled)
+        g_z_sampled = self.ccf.g.vae(z_sampled.unsqueeze(-1).unsqueeze(-1))
         img = self.ccf.generate_images(g_z_sampled)
         sample_time = time.time() - start_sample_time
 
         return img, sample_time
+
+    def sample_latents(self, sampler, y, init_sample=None, save_path=None):
+
+        z_sampled = sampler(y=y, init_sample=init_sample, save_path=save_path)
+        return z_sampled
 
     def _extract_acc_or_feat(self, acc_or_feat, n_samples, clf_model=None, inception=None):
         raise NotImplementedError
@@ -112,6 +117,15 @@ class ConditionalSampling(Sampling):
             img, sample_time = self._sample_batch(self.sampler, y, save_path=save_path)
             print(f'class {i}, sampling time: {sample_time}')
             self.plot('{}/samples_class{}.png'.format(save_path, i), img)
+
+    def get_latents(self, z, i):
+        save_path = os.path.join(self.save_path, 'cond_z')
+        os.makedirs(save_path, exist_ok=True)
+
+        y = torch.tensor([i]).repeat(self.batch_size).to(self.device)
+        z_sampled = self.sample_latents(self.sampler, y, init_sample=z, save_path=save_path)
+        return z_sampled
+            
 
     def _extract_acc_or_feat(self, acc_or_feat, n_samples, clf_model=None, inception=None):
         n_samples_cls = n_samples // self.n_classes

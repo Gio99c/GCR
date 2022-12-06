@@ -137,7 +137,7 @@ def register_sample_q(fn):
 
 
 @register_sample_q
-def sample_q_sgld(ccf, y, device=torch.device('cuda'), save_path=None, plot=None, every_n_plot=5, **kwargs):
+def sample_q_sgld(ccf, y, device=torch.device('cuda'), init_sample=None, save_path=None, plot=None, every_n_plot=5, **kwargs):
     """sampling in the z space"""
     ccf.eval()
 
@@ -147,7 +147,8 @@ def sample_q_sgld(ccf, y, device=torch.device('cuda'), save_path=None, plot=None
     n_steps = kwargs['n_steps']
 
     # generate initial samples
-    init_sample = torch.randn(y.size(0), latent_dim).to(device)
+    if init_sample is None:
+        init_sample = torch.randn(y.size(0), latent_dim).to(device)
     x_k = torch.autograd.Variable(init_sample, requires_grad=True)
 
     # sgld
@@ -185,7 +186,7 @@ class VPODE(nn.Module):
         z = states[0]
 
         if self.save_path is not None and self.n_evals % self.every_n_plot == 0:
-            g_z_sampled = self.ccf.g(z.detach())
+            g_z_sampled = self.ccf.g(z.detach().unsqueeze(-1).unsqueeze(-1))
             x_sampled = self.ccf.generate_images(g_z_sampled)
             self.plot(f'{self.save_path}/samples_cls{self.y[0].item()}_nsteps{self.n_evals:03d}_tk{t_k}.png',
                       x_sampled)
@@ -204,7 +205,7 @@ class VPODE(nn.Module):
 
 
 @register_sample_q
-def sample_q_ode(ccf, y, device=torch.device('cuda'), save_path=None, plot=None, every_n_plot=5, **kwargs):
+def sample_q_ode(ccf, y, device=torch.device('cuda'), save_path=None, init_sample=None, plot=None, every_n_plot=5, **kwargs):
     """sampling in the z space"""
     ccf.eval()
 
@@ -215,7 +216,10 @@ def sample_q_ode(ccf, y, device=torch.device('cuda'), save_path=None, plot=None,
     use_adjoint = kwargs['use_adjoint']
 
     # generate initial samples
-    z_k = torch.FloatTensor(y.size(0), latent_dim).normal_(0, 1).to(device)
+    if init_sample is None:
+        z_k = torch.FloatTensor(y.size(0), latent_dim).normal_(0, 1).to(device)
+    else:
+        z_k = init_sample
 
     # ODE function
     vpode = VPODE(ccf, y, save_path=save_path, plot=plot, every_n_plot=every_n_plot)
@@ -240,7 +244,7 @@ def sample_q_ode(ccf, y, device=torch.device('cuda'), save_path=None, plot=None,
 
 
 @register_sample_q
-def sample_q_vpsde(ccf, y, device=torch.device('cuda'), save_path=None, plot=None, every_n_plot=5,
+def sample_q_vpsde(ccf, y, device=torch.device('cuda'), save_path=None, init_sample=None, plot=None, every_n_plot=5,
                    beta_min=0.1, beta_max=20, T=1, eps=1e-3, **kwargs):
     """sampling in the z space"""
     ccf.eval()
@@ -251,7 +255,10 @@ def sample_q_vpsde(ccf, y, device=torch.device('cuda'), save_path=None, plot=Non
     target_snr = kwargs['target_snr']
 
     # generate initial samples
-    z_init = torch.FloatTensor(y.size(0), latent_dim).normal_(0, 1).to(device)
+    if init_sample is None:
+        z_init = torch.FloatTensor(y.size(0), latent_dim).normal_(0, 1).to(device)
+    else:
+        z_init = init_sample
     z_k = torch.autograd.Variable(z_init, requires_grad=True)
 
     discrete_betas = torch.linspace(beta_min / N, beta_max / N, N)
@@ -262,11 +269,11 @@ def sample_q_vpsde(ccf, y, device=torch.device('cuda'), save_path=None, plot=Non
     for k in range(N):
 
         if save_path is not None and k % every_n_plot == 0:
-            g_z_sampled = ccf.g(z_k.detach())
+            g_z_sampled = ccf.g(z_k.detach().unsqueeze(-1).unsqueeze(-1))
             x_sampled = ccf.generate_images(g_z_sampled)
             plot('{}/samples_class{}_nsteps{}.png'.format(save_path, y[0].item(), k), x_sampled)
 
-        energy_neg = ccf(z_k, y=y)
+        energy_neg = ccf(z_k.unsqueeze(-1).unsqueeze(-1), y=y)
 
         # predictor
         t_k = timesteps[k]

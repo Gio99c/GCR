@@ -4,6 +4,11 @@
 # This work is licensed under the NVIDIA Source Code License
 # for LACE. To view a copy of this license, see the LICENSE file.
 # ---------------------------------------------------------------
+import sys
+import os
+
+p = os.path.join(os.path.abspath("."), "LACE")
+sys.path.insert(1, p)
 
 import torch
 import torch.nn as nn
@@ -12,9 +17,9 @@ from torchdiffeq import odeint_adjoint
 from torchdiffeq import odeint as odeint_normal
 
 import dnnlib, legacy
-from latent_model import DenseEmbedder
-from models import DenseNet
-from models import WideResNet
+from LACE.latent_model import DenseEmbedder
+from LACE.models import DenseNet
+from LACE.models import WideResNet
 
 
 NETWORK_PKL = 'https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/paper-fig11b-cifar10/cifar10u-cifar-ada-best-fid.pkl'
@@ -149,11 +154,11 @@ def sample_q_sgld(ccf, y, device=torch.device('cuda'), save_path=None, plot=None
     for k in range(n_steps):
 
         if save_path is not None and k % every_n_plot == 0:
-            g_z_sampled = ccf.g(x_k.detach())
+            g_z_sampled = ccf.g.vae(x_k.detach().unsqueeze(-1).unsqueeze(-1))
             x_sampled = ccf.generate_images(g_z_sampled)
             plot('{}/samples_class{}_nsteps{}.png'.format(save_path, y[0].item(), k), x_sampled)
 
-        energy_neg = ccf(x_k, y=y)
+        energy_neg = ccf(x_k.unsqueeze(-1).unsqueeze(-1), y=y)
         f_prime = torch.autograd.grad(energy_neg.sum(), [x_k])[0]
         x_k.data += sgld_lr * f_prime + sgld_std * torch.randn_like(x_k)
 

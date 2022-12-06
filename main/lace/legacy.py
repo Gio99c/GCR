@@ -8,6 +8,10 @@
 #
 # This file is modified from StyleGAN2-ADA.
 # See https://github.com/NVlabs/stylegan2-ada/blob/main/LICENSE.txt for the license file.
+import sys
+import os
+p = os.path.join(os.path.abspath("."), "LACE")
+sys.path.insert(1, p)
 
 import click
 import pickle

@@ -20,7 +20,7 @@ from tqdm import tqdm
 import pickle
 
 import utils
-from models import DenseNet
+from LACE.models import DenseNet
 from cifar10_data import Cifar10LatentDataset
 from metrics.calc_inception import load_patched_inception_v3
 
@@ -45,7 +45,7 @@ class Sampling():
 
         start_sample_time = time.time()
         z_sampled = sampler(y=y, save_path=save_path)
-        g_z_sampled = self.ccf.g(z_sampled)
+        g_z_sampled = self.ccf.g.vae(z_sampled)
         img = self.ccf.generate_images(g_z_sampled)
         sample_time = time.time() - start_sample_time
 
@@ -109,7 +109,6 @@ class ConditionalSampling(Sampling):
 
         for i in range(self.n_classes):
             y = torch.tensor([i]).repeat(self.batch_size).to(self.device)
-
             img, sample_time = self._sample_batch(self.sampler, y, save_path=save_path)
             print(f'class {i}, sampling time: {sample_time}')
             self.plot('{}/samples_class{}.png'.format(save_path, i), img)

@@ -217,6 +217,11 @@ class VAE(pl.LightningModule):
         mu, logvar = self.enc(x)
         return mu, logvar
 
+    def _encode(self, x):
+        mu, logvar = self.enc(x)
+        z = self.reparameterize(mu, logvar)
+        return z
+
     def decode(self, z):
         return self.dec(z)
 

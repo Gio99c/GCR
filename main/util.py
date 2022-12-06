@@ -1,10 +1,17 @@
 import logging
+import sys
+import os
+
+p = os.path.join(os.path.abspath("."), "datasets")
+sys.path.insert(1, p)
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torchvision.transforms as T
 from PIL import Image
+
+
 
 from datasets import (
     AFHQv2Dataset,
@@ -16,6 +23,12 @@ from datasets import (
 )
 
 logger = logging.getLogger(__name__)
+
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
 
 def configure_device(device):

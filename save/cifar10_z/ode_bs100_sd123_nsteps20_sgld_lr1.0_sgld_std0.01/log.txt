@@ -1,0 +1,19 @@
+Loading networks from "https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/paper-fig11b-cifar10/cifar10u-cifar-ada-best-fid.pkl"...
+Downloading https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/paper-fig11b-cifar10/cifar10u-cifar-ada-best-fid.pkl ... done
+Using DenseEmbedder...
+None norm
+Working in the x_space: cifar10_z
+Identity()
+loading model from ./pretrained/classifiers/cifar10/densenet-bc-L190-k40/model_best.pth.tar
+Traceback (most recent call last):
+  File "/Users/gio/Desktop/UIC/CS594/Class project/GRC/main/lace/main.py", line 147, in <module>
+    main(args)
+  File "/Users/gio/Desktop/UIC/CS594/Class project/GRC/main/lace/main.py", line 58, in main
+    classifier_ckpt_dict = torch.load(load_path)
+  File "/Users/gio/opt/anaconda3/envs/sklearn-env/lib/python3.10/site-packages/torch/serialization.py", line 771, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/Users/gio/opt/anaconda3/envs/sklearn-env/lib/python3.10/site-packages/torch/serialization.py", line 270, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/Users/gio/opt/anaconda3/envs/sklearn-env/lib/python3.10/site-packages/torch/serialization.py", line 251, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: './pretrained/classifiers/cifar10/densenet-bc-L190-k40/model_best.pth.tar'

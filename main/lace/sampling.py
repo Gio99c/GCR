@@ -155,11 +155,11 @@ def sample_q_sgld(ccf, y, device=torch.device('cuda'), init_sample=None, save_pa
     for k in range(n_steps):
 
         if save_path is not None and k % every_n_plot == 0:
-            g_z_sampled = ccf.g.vae(x_k.detach().unsqueeze(-1).unsqueeze(-1))
+            g_z_sampled = ccf.g.vae(x_k.detach())
             x_sampled = ccf.generate_images(g_z_sampled)
             plot('{}/samples_class{}_nsteps{}.png'.format(save_path, y[0].item(), k), x_sampled)
 
-        energy_neg = ccf(x_k.unsqueeze(-1).unsqueeze(-1), y=y)
+        energy_neg = ccf(x_k, y=y)
         f_prime = torch.autograd.grad(energy_neg.sum(), [x_k])[0]
         x_k.data += sgld_lr * f_prime + sgld_std * torch.randn_like(x_k)
 

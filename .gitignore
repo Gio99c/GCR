@@ -1,0 +1,5 @@
+*.DS_Store
+datasets/cifar-10-python.tar.gz
+main/datasets/cifar-10-python.tar.gz
+*.pyc
+*.ckpt

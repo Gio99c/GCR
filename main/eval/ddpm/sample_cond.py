@@ -134,6 +134,7 @@ def sample_cond(config):
         batch_size=batch_size,
         drop_last=False,
         shuffle=False,
+        pin_memory=True,
         num_workers=config_ddpm.evaluation.workers,
         **loader_kws,
     )

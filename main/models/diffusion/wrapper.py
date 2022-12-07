@@ -30,6 +30,8 @@ class DDPMWrapper(pl.LightningModule):
         guidance_weight=0.0,
         z_cond=False,
         ddpm_latents=None,
+        c=None,
+        sampler=None,
     ):
         super().__init__()
         assert loss in ["l1", "l2"]
@@ -68,6 +70,11 @@ class DDPMWrapper(pl.LightningModule):
 
         # Spaced Diffusion (for spaced re-sampling)
         self.spaced_diffusion = None
+
+    def init_lace(self, c, sampler):
+        # LACE arguments
+        self.c = c
+        self.sampler = sampler
 
     def forward(
         self,
@@ -192,6 +199,8 @@ class DDPMWrapper(pl.LightningModule):
 
         if self.eval_mode == "sample":
             x_t, z = batch
+            if self.c is not None:
+                z = self.sampler.get_latents(z, self.c)
             recons = self.vae(z)
             recons = 2 * recons - 1
 

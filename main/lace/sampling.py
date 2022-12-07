@@ -188,7 +188,7 @@ class VPODE(nn.Module):
         z = states[0]
 
         if self.save_path is not None and self.n_evals % self.every_n_plot == 0:
-            g_z_sampled = self.ccf.g.vae(z.detach().unsqueeze(-1).unsqueeze(-1))
+            g_z_sampled = self.ccf.g.vae(z.detach())
             x_sampled = self.ccf.generate_images(g_z_sampled)
             self.plot(f'{self.save_path}/samples_cls{self.y[0].item()}_nsteps{self.n_evals:03d}_tk{t_k}.png',
                       x_sampled)
@@ -272,7 +272,7 @@ def sample_q_vpsde(ccf, y, device=torch.device('cuda'), save_path=None, init_sam
     for k in range(N):
 
         if save_path is not None and k % every_n_plot == 0:
-            g_z_sampled = ccf.g(z_k.detach().unsqueeze(-1).unsqueeze(-1))
+            g_z_sampled = ccf.g.vae(z_k.detach().unsqueeze(-1).unsqueeze(-1))
             x_sampled = ccf.generate_images(g_z_sampled)
             plot('{}/samples_class{}_nsteps{}.png'.format(save_path, y[0].item(), k), x_sampled)
 

@@ -113,7 +113,7 @@ class DDPMWrapper(pl.LightningModule):
             return sample_nw.sample(
             x,
             cond=self.vae(z_sampled),
-            z_vae=z,
+            z_vae=None,
             n_steps=n_steps,
             guidance_weight=self.guidance_weight,
             checkpoints=checkpoints,

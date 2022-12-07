@@ -108,14 +108,26 @@ class DDPMWrapper(pl.LightningModule):
                     guidance_weight=self.guidance_weight,
                     checkpoints=checkpoints,
                 )
-            return self.spaced_diffusion(
-                x,
-                cond=cond,
-                z_vae=z,
-                guidance_weight=self.guidance_weight,
-                checkpoints=checkpoints,
-                ddpm_latents=ddpm_latents,
-            )
+        if self.c is not None:
+            z_sampled = self.sampler.get_latents(z, self.c)
+            return sample_nw.sample(
+            x,
+            cond=self.vae(z_sampled),
+            z_vae=z,
+            n_steps=n_steps,
+            guidance_weight=self.guidance_weight,
+            checkpoints=checkpoints,
+            ddpm_latents=ddpm_latents,
+        )
+        return sample_nw.sample(
+            x,
+            cond=cond,
+            z_vae=z,
+            n_steps=n_steps,
+            guidance_weight=self.guidance_weight,
+            checkpoints=checkpoints,
+            ddpm_latents=ddpm_latents,
+        )
 
         # For truncated resampling
         if self.sample_method == "ddim":

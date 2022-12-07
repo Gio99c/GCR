@@ -146,6 +146,7 @@ def sample_q_sgld(ccf, y, device=torch.device('cuda'), init_sample=None, save_pa
     sgld_std = kwargs['sgld_std']
     n_steps = kwargs['n_steps']
 
+    torch.set_grad_enabled(True)
     # generate initial samples
     if init_sample is None:
         init_sample = torch.randn(y.size(0), latent_dim).to(device)
@@ -165,6 +166,7 @@ def sample_q_sgld(ccf, y, device=torch.device('cuda'), init_sample=None, save_pa
 
     ccf.train()
     final_samples = x_k.detach()
+    torch.set_grad_enabled(False)
 
     return final_samples
 
@@ -186,7 +188,7 @@ class VPODE(nn.Module):
         z = states[0]
 
         if self.save_path is not None and self.n_evals % self.every_n_plot == 0:
-            g_z_sampled = self.ccf.g(z.detach().unsqueeze(-1).unsqueeze(-1))
+            g_z_sampled = self.ccf.g.vae(z.detach().unsqueeze(-1).unsqueeze(-1))
             x_sampled = self.ccf.generate_images(g_z_sampled)
             self.plot(f'{self.save_path}/samples_cls{self.y[0].item()}_nsteps{self.n_evals:03d}_tk{t_k}.png',
                       x_sampled)
@@ -198,7 +200,7 @@ class VPODE(nn.Module):
             cond_energy_neg = self.ccf.get_cond_energy(z, self.y)
             cond_f_prime = torch.autograd.grad(cond_energy_neg.sum(), [z])[0]
             dz_dt = -0.5 * beta_t * cond_f_prime
-
+        torch.set_grad_enabled(False)
         self.n_evals += 1
 
         return dz_dt,
@@ -237,6 +239,7 @@ def sample_q_ode(ccf, y, device=torch.device('cuda'), save_path=None, init_sampl
         method=method)
 
     ccf.train()
+    torch.set_grad_enabled(False)
     z_t0 = state_t[0][-1]
     print(f'#ODE steps for {y[0].item()}: {vpode.n_evals}')
 

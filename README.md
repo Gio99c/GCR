@@ -19,7 +19,6 @@ The main contributions of this work are:
 ![Conditional latent sampling](./assets/control0.gif)
 ![Diffusion guided refiniment](./assets/refinement0.png)
 
-</div>
 
 ---
 

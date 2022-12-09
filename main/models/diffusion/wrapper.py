@@ -32,6 +32,7 @@ class DDPMWrapper(pl.LightningModule):
         ddpm_latents=None,
         c=None,
         sampler=None,
+        double=None,
     ):
         super().__init__()
         assert loss in ["l1", "l2"]
@@ -71,10 +72,11 @@ class DDPMWrapper(pl.LightningModule):
         # Spaced Diffusion (for spaced re-sampling)
         self.spaced_diffusion = None
 
-    def init_lace(self, c, sampler):
+    def init_lace(self, c, sampler, double=False):
         # LACE arguments
         self.c = c
         self.sampler = sampler
+        self.double = double
 
     def forward(
         self,
@@ -110,8 +112,9 @@ class DDPMWrapper(pl.LightningModule):
                 )
         if self.c is not None:
             z_sampled = self.sampler.get_latents(z, self.c)
+            x_sampled = self.vae(self.sampler.get_latents(self.vae._encode(x), self.c)) if self.double else x
             return sample_nw.sample(
-            x,
+            x_sampled,
             cond=self.vae(z_sampled),
             z_vae=None,
             n_steps=n_steps,
@@ -119,19 +122,6 @@ class DDPMWrapper(pl.LightningModule):
             checkpoints=checkpoints,
             ddpm_latents=ddpm_latents,
         )
-        return sample_nw.sample(
-            x,
-            cond=cond,
-            z_vae=z,
-            n_steps=n_steps,
-            guidance_weight=self.guidance_weight,
-            checkpoints=checkpoints,
-            ddpm_latents=ddpm_latents,
-        )
-
-        # For truncated resampling
-        if self.sample_method == "ddim":
-            raise ValueError("DDIM is only supported for spaced sampling")
         return sample_nw.sample(
             x,
             cond=cond,

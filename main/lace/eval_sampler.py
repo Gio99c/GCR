@@ -20,7 +20,7 @@ from tqdm import tqdm
 import pickle
 
 import utils
-from LACE.models import DenseNet
+from lace.models import DenseNet
 from cifar10_data import Cifar10LatentDataset
 from metrics.calc_inception import load_patched_inception_v3
 

@@ -7,7 +7,7 @@
 import sys
 import os
 
-p = os.path.join(os.path.abspath("."), "LACE")
+p = os.path.join(os.path.abspath("."), "lace")
 sys.path.insert(1, p)
 
 import torch
@@ -17,9 +17,9 @@ from torchdiffeq import odeint_adjoint
 from torchdiffeq import odeint as odeint_normal
 
 import dnnlib, legacy
-from LACE.latent_model import DenseEmbedder
-from LACE.models import DenseNet
-from LACE.models import WideResNet
+from lace.latent_model import DenseEmbedder
+from lace.models import DenseNet
+from lace.models import WideResNet
 
 
 NETWORK_PKL = 'https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/paper-fig11b-cifar10/cifar10u-cifar-ada-best-fid.pkl'

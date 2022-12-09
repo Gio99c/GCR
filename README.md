@@ -23,6 +23,9 @@ The main contributions of this work are:
 
 ---
 
+## Code example
+It is possible to try the conditional latent generation using the Colab code tutorial in the file `GCR: Latent conditional sampling.ipynb`
+
 
 ## Samples
 All results can be accessed [here](https://drive.google.com/drive/folders/1FynpfNo702DPJEcbYadQuWozSsWmpx7S?usp=sharing).

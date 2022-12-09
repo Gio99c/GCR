@@ -12,8 +12,9 @@ Controlling VAE and DDP through EBMs leads to a fast, diverse and high-quality g
 The main contributions of this work are:
 
 - **A novel mixed framework** that combines VAEs, DDPMs and EBMs to provide a controllable model that generates high-quality and diverse images in a reasonable amount of time leveraging the diffusion speed-quality tradeoff.
+
 - **A modular three-stage approach** with a *generator-refiner* network and a *controller* added for improved controllability and compositionality. Each module is independent and can be replaced by other architectures.
-- 
+
 | Conditional latent sampling | Diffusion-guided refinement  |
 |:-------------: |:---------------:|
 |![Conditional latent sampling](./assets/control0.gif)|![Diffusion guided refiniment](./assets/refinement0.png)|
@@ -23,9 +24,9 @@ The main contributions of this work are:
 ---
 
 
-## Pretrained checkpoints
+## Samples
 All results can be accessed [here](https://drive.google.com/drive/folders/1FynpfNo702DPJEcbYadQuWozSsWmpx7S?usp=sharing).
 
 
 ## Contact
-Giuseppe Concialdi (@gio99c)
+Giuseppe Concialdi (@Gio99c)

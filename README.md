@@ -1,4 +1,4 @@
-# GRC: Generator-Refiner-Controller Network for Controllable Generation
+# GCR: Generator-Refiner-Controller Network for Controllable Generation
 
 This repo contains the implementation of the class project: **Controlling DDPMs and VAEs through EBMs** by Giuseppe Concialdi
 
